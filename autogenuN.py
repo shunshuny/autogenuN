@@ -576,10 +576,10 @@ public:
   /// @remark This method is intended to be used inside of the cgmres solvers and does not check size of each argument. 
   /// Use the overloaded method if you call this outside of the cgmres solvers. 
   ///
-  void eval_phix(const double t, const double* x, double* phix) const {
+  void eval_phix1(const double t, const double* x, double* phix1) const {
 """ 
         ])
-        symutils.write_symfunc(f_model_h, self.__symbolic_functions.phix, 'phix', common_subexpression_elimination)
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.phix1, 'phix1', common_subexpression_elimination)
         f_model_h.writelines([
 """ 
   }
@@ -595,11 +595,11 @@ public:
   /// @remark This method is intended to be used inside of the cgmres solvers and does not check size of each argument. 
   /// Use the overloaded method if you call this outside of the cgmres solvers. 
   ///
-  void eval_hx(const double t, const double* x, const double* u, 
-               const double* lmd, double* hx) const {
+  void eval_hx1(const double t, const double* x, const double* u, 
+                const double* lmd1, double* hx1) const {
 """ 
         ])
-        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hx, 'hx', common_subexpression_elimination)
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hx1, 'hx1', common_subexpression_elimination)
         f_model_h.writelines([
 """ 
   }
@@ -615,15 +615,60 @@ public:
   /// @remark This method is intended to be used inside of the cgmres solvers and does not check size of each argument. 
   /// Use the overloaded method if you call this outside of the cgmres solvers. 
   ///
-  void eval_hu(const double t, const double* x, const double* u, 
-               const double* lmd, double* hu) const {
+  void eval_hu1(const double t, const double* x, const double* u, 
+                const double* lmd1, double* hu1) const {
 """ 
         ])
-        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hu, 'hu', common_subexpression_elimination)
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hu1, 'hu1', common_subexpression_elimination)
         f_model_h.writelines([
 """ 
   }
-
+  void eval_phix2(const double t, const double* x, double* phix2) const {
+""" 
+        ])
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.phix2, 'phix2', common_subexpression_elimination)
+        f_model_h.writelines([
+""" 
+  }
+  void eval_hx2(const double t, const double* x, const double* u, 
+                const double* lmd2, double* hx2) const {
+""" 
+        ])
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hx2, 'hx2', common_subexpression_elimination)
+        f_model_h.writelines([
+""" 
+  }
+  void eval_hu2(const double t, const double* x, const double* u, 
+                const double* lmd2, double* hu2) const {
+""" 
+        ])
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hu2, 'hu2', common_subexpression_elimination)
+        f_model_h.writelines([
+""" 
+  }
+  void eval_phix3(const double t, const double* x, double* phix3) const {
+""" 
+        ])
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.phix3, 'phix3', common_subexpression_elimination)
+        f_model_h.writelines([
+""" 
+  }
+  void eval_hx3(const double t, const double* x, const double* u, 
+                const double* lmd3, double* hx3) const {
+""" 
+        ])
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hx3, 'hx3', common_subexpression_elimination)
+        f_model_h.writelines([
+""" 
+  }
+  void eval_hu3(const double t, const double* x, const double* u, 
+                const double* lmd3, double* hu3) const {
+""" 
+        ])
+        symutils.write_symfunc(f_model_h, self.__symbolic_functions.hu3, 'hu3', common_subexpression_elimination)
+        f_model_h.writelines([
+""" 
+  }
   ///
   /// @brief Computes the state equation dx = f(t, x, u).
   /// @param[in] t Time.
@@ -655,15 +700,15 @@ public:
   /// @param[out] phix Evaluated value of the partial derivative of terminal cost. Size must be nx.
   ///
   template <typename VectorType1, typename VectorType2>
-  void eval_phix(const double t, const MatrixBase<VectorType1>& x, 
-                 const MatrixBase<VectorType2>& phix) const {
+  void eval_phix1(const double t, const MatrixBase<VectorType1>& x, 
+                 const MatrixBase<VectorType2>& phix1) const {
     if (x.size() != nx) {
       throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
     }
-    if (phix.size() != nx) {
-      throw std::invalid_argument("[OCP]: phix.size() must be " + std::to_string(nx));
+    if (phix1.size() != nx) {
+      throw std::invalid_argument("[OCP]: phix1.size() must be " + std::to_string(nx));
     }
-    eval_phix(t, x.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType2, phix).data());
+    eval_phix1(t, x.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType2, phix1).data());
   }
 
   ///
@@ -676,23 +721,23 @@ public:
   /// @param[out] hx Evaluated value of the partial derivative of the Hamiltonian. Size must be nx.
   ///
   template <typename VectorType1, typename VectorType2, typename VectorType3, typename VectorType4>
-  void eval_hx(const double t, const MatrixBase<VectorType1>& x, 
+  void eval_hx1(const double t, const MatrixBase<VectorType1>& x, 
                const MatrixBase<VectorType2>& uc, 
-               const MatrixBase<VectorType3>& lmd, 
-               const MatrixBase<VectorType4>& hx) const {
+               const MatrixBase<VectorType3>& lmd1, 
+               const MatrixBase<VectorType4>& hx1) const {
     if (x.size() != nx) {
       throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
     }
     if (uc.size() != nuc) {
       throw std::invalid_argument("[OCP]: uc.size() must be " + std::to_string(nuc));
     }
-    if (lmd.size() != nx) {
-      throw std::invalid_argument("[OCP]: lmd.size() must be " + std::to_string(nx));
+    if (lmd1.size() != nx) {
+      throw std::invalid_argument("[OCP]: lmd1.size() must be " + std::to_string(nx));
     }
-    if (hx.size() != nuc) {
-      throw std::invalid_argument("[OCP]: hx.size() must be " + std::to_string(nx));
+    if (hx1.size() != nuc) {
+      throw std::invalid_argument("[OCP]: hx1.size() must be " + std::to_string(nx));
     }
-    eval_hx(t, x.derived().data(), uc.derived().data(), lmd.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hx).data());
+    eval_hx1(t, x.derived().data(), uc.derived().data(), lmd1.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hx1).data());
   }
 
   ///
@@ -705,23 +750,123 @@ public:
   /// @param[out] hu Evaluated value of the partial derivative of the Hamiltonian. Size must be nuc.
   ///
   template <typename VectorType1, typename VectorType2, typename VectorType3, typename VectorType4>
-  void eval_hu(const double t, const MatrixBase<VectorType1>& x, 
+  void eval_hu1(const double t, const MatrixBase<VectorType1>& x, 
                const MatrixBase<VectorType2>& uc, 
-               const MatrixBase<VectorType3>& lmd, 
-               const MatrixBase<VectorType4>& hu) const {
+               const MatrixBase<VectorType3>& lmd1, 
+               const MatrixBase<VectorType4>& hu1) const {
     if (x.size() != nx) {
       throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
     }
     if (uc.size() != nuc) {
       throw std::invalid_argument("[OCP]: uc.size() must be " + std::to_string(nuc));
     }
-    if (lmd.size() != nx) {
-      throw std::invalid_argument("[OCP]: lmd.size() must be " + std::to_string(nx));
+    if (lmd1.size() != nx) {
+      throw std::invalid_argument("[OCP]: lmd1.size() must be " + std::to_string(nx));
     }
-    if (hu.size() != nuc) {
-      throw std::invalid_argument("[OCP]: hu.size() must be " + std::to_string(nuc));
+    if (hu1.size() != nuc) {
+      throw std::invalid_argument("[OCP]: hu1.size() must be " + std::to_string(nuc));
     }
-    eval_hu(t, x.derived().data(), uc.derived().data(), lmd.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hu).data());
+    eval_hu1(t, x.derived().data(), uc.derived().data(), lmd1.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hu1).data());
+  }
+
+  template <typename VectorType1, typename VectorType2>
+  void eval_phix2(const double t, const MatrixBase<VectorType1>& x, 
+                 const MatrixBase<VectorType2>& phix2) const {
+    if (x.size() != nx) {
+      throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
+    }
+    if (phix2.size() != nx) {
+      throw std::invalid_argument("[OCP]: phix2.size() must be " + std::to_string(nx));
+    }
+    eval_phix2(t, x.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType2, phix2).data());
+  }
+ template <typename VectorType1, typename VectorType2, typename VectorType3, typename VectorType4>
+  void eval_hx2(const double t, const MatrixBase<VectorType1>& x, 
+               const MatrixBase<VectorType2>& uc, 
+               const MatrixBase<VectorType3>& lmd2, 
+               const MatrixBase<VectorType4>& hx2) const {
+    if (x.size() != nx) {
+      throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
+    }
+    if (uc.size() != nuc) {
+      throw std::invalid_argument("[OCP]: uc.size() must be " + std::to_string(nuc));
+    }
+    if (lmd2.size() != nx) {
+      throw std::invalid_argument("[OCP]: lmd2.size() must be " + std::to_string(nx));
+    }
+    if (hx2.size() != nuc) {
+      throw std::invalid_argument("[OCP]: hx2.size() must be " + std::to_string(nx));
+    }
+    eval_hx2(t, x.derived().data(), uc.derived().data(), lmd2.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hx2).data());
+  }
+  template <typename VectorType1, typename VectorType2, typename VectorType3, typename VectorType4>
+  void eval_hu2(const double t, const MatrixBase<VectorType1>& x, 
+               const MatrixBase<VectorType2>& uc, 
+               const MatrixBase<VectorType3>& lmd2, 
+               const MatrixBase<VectorType4>& hu2) const {
+    if (x.size() != nx) {
+      throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
+    }
+    if (uc.size() != nuc) {
+      throw std::invalid_argument("[OCP]: uc.size() must be " + std::to_string(nuc));
+    }
+    if (lmd2.size() != nx) {
+      throw std::invalid_argument("[OCP]: lmd2.size() must be " + std::to_string(nx));
+    }
+    if (hu2.size() != nuc) {
+      throw std::invalid_argument("[OCP]: hu2.size() must be " + std::to_string(nuc));
+    }
+    eval_hu2(t, x.derived().data(), uc.derived().data(), lmd2.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hu2).data());
+  }
+  
+    template <typename VectorType1, typename VectorType2>
+  void eval_phix3(const double t, const MatrixBase<VectorType1>& x, 
+                 const MatrixBase<VectorType2>& phix3) const {
+    if (x.size() != nx) {
+      throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
+    }
+    if (phix3.size() != nx) {
+      throw std::invalid_argument("[OCP]: phix3.size() must be " + std::to_string(nx));
+    }
+    eval_phix3(t, x.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType3, phix3).data());
+  }
+ template <typename VectorType1, typename VectorType2, typename VectorType3, typename VectorType4>
+  void eval_hx3(const double t, const MatrixBase<VectorType1>& x, 
+               const MatrixBase<VectorType2>& uc, 
+               const MatrixBase<VectorType3>& lmd3, 
+               const MatrixBase<VectorType4>& hx3) const {
+    if (x.size() != nx) {
+      throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
+    }
+    if (uc.size() != nuc) {
+      throw std::invalid_argument("[OCP]: uc.size() must be " + std::to_string(nuc));
+    }
+    if (lmd3.size() != nx) {
+      throw std::invalid_argument("[OCP]: lmd3.size() must be " + std::to_string(nx));
+    }
+    if (hx3.size() != nuc) {
+      throw std::invalid_argument("[OCP]: hx3.size() must be " + std::to_string(nx));
+    }
+    eval_hx3(t, x.derived().data(), uc.derived().data(), lmd3.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hx3).data());
+  }
+  template <typename VectorType1, typename VectorType2, typename VectorType3, typename VectorType4>
+  void eval_hu3(const double t, const MatrixBase<VectorType1>& x, 
+               const MatrixBase<VectorType2>& uc, 
+               const MatrixBase<VectorType3>& lmd3, 
+               const MatrixBase<VectorType4>& hu3) const {
+    if (x.size() != nx) {
+      throw std::invalid_argument("[OCP]: x.size() must be " + std::to_string(nx));
+    }
+    if (uc.size() != nuc) {
+      throw std::invalid_argument("[OCP]: uc.size() must be " + std::to_string(nuc));
+    }
+    if (lmd3.size() != nx) {
+      throw std::invalid_argument("[OCP]: lmd3.size() must be " + std::to_string(nx));
+    }
+    if (hu3.size() != nuc) {
+      throw std::invalid_argument("[OCP]: hu3.size() must be " + std::to_string(nuc));
+    }
+    eval_hu3(t, x.derived().data(), uc.derived().data(), lmd3.derived().data(), CGMRES_EIGEN_CONST_CAST(VectorType4, hu3).data());
   }
 
 };
