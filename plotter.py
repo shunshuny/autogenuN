@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pylab as plt
 import seaborn as sns
 import os
+import math
 
 
 class Plotter(object):
@@ -14,9 +15,10 @@ class Plotter(object):
             save(): Saves the graph of the logs as a .pdf file.
     """
 
-    def __init__(self, log_dir, log_name: str):
+    def __init__(self, log_dir, log_name: str, player: int):
         """ Inits Plotter with loading the logs. """
         # Load the data of the simulation results. 
+        self.__player = player
         self.__log_dir = log_dir
         self.__log_name = log_name
         self.__t_data = np.genfromtxt(os.path.join(log_dir, log_name+'_t.log'))
@@ -32,7 +34,7 @@ class Plotter(object):
         if self.__x_data.shape[0] == self.__x_data.size:
             self.__dim_x= 1
         else:
-            self.__dim_x = self.__x_data.shape[1]
+            self.__dim_x = math.floor(self.__x_data.shape[1]/self.__player)
         if self.__u_data.shape[0] == self.__u_data.size:
             self.__dim_u = 1
         else:
