@@ -219,7 +219,7 @@ class AutoGenU(object):
         self.__nh = len(h)
         x = sympy.symbols('x[0:%d]' %(self.__nxo))
         u = sympy.symbols('u[0:%d]' %(self.__nu+self.__nc+self.__nh))
-        lmd = sympy.symbols('lmd[0:%d]' %(self.__nx*3))
+        lmd = sympy.symbols('lmd[0:%d]' %(self.__nx))
         hamiltonian1 = L[0] + sum(lmd[i] * f[i] for i in range(self.__nxo))
         hamiltonian2 = L[1] + sum(lmd[i+self.__nxo] * f[i] for i in range(self.__nxo))
         hamiltonian3 = L[2] + sum(lmd[i+self.__nxo*2] * f[i] for i in range(self.__nxo))
