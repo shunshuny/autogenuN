@@ -112,6 +112,15 @@ class AutoGenU(object):
         """
         return sympy.symbols('u[0:%d]' %(self.__nu))
 
+    def separate_u(self, ulist: list): #added
+        assert len(ulist) == self.__player, 'the length of ulist must be equal to player!'
+        sumulist = 0
+        for i in range(self.__player):
+            sumulist += ulist[i]
+        assert sumulist == self.__nu, 'sum of the number in ulist must be equal to nu!'
+        self.__ulist = ulist
+        return self.__ulist
+
     def define_scalar_var(self, var_name: str):
         """ Returns symbolic variable whose name is var_name. 
 
@@ -237,22 +246,23 @@ class AutoGenU(object):
         for i in range(self.__nxo):
             hx.append(hx3[i])
         hx = tuple(hx)
-        number = math.floor(self.__nu/3) #math.floor(10.9)=10
         u1 = [] ; u2 = []; u3 = []
-        for i in range(number):
+        for i in range(self.__ulist[0]):
             u1.append(u[i])
-            u2.append(u[i + number])
-            u3.append(u[i + number*2])
+        for i in range(self.__ulist[1]):
+            u2.append(u[i + self.__ulist[0]])
+        for i in range(self.__ulist[2]):
+            u3.append(u[i + self.__ulist[0]+self.__ulist[1]])
         u1 = tuple(u1); u2 = tuple(u2); u3 = tuple(u3)
         hu1 = symutils.diff_scalar_func(hamiltonian1, u1)
         hu2 = symutils.diff_scalar_func(hamiltonian2, u2)
         hu3 = symutils.diff_scalar_func(hamiltonian3, u3)
         hu = []
-        for i in range(number):
+        for i in range(len(u1)):
             hu.append(hu1[i])
-        for i in range(number):
+        for i in range(len(u2)):
             hu.append(hu2[i])
-        for i in range(number):
+        for i in range(len(u3)):
             hu.append(hu3[i])
         hu = tuple(hu)
         fb_eps = sympy.symbols('fb_eps[0:%d]' %(self.__nh))
