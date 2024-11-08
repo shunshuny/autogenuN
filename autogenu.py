@@ -5,7 +5,6 @@ from collections import namedtuple
 import sympy
 import os
 import sys
-import math
 
 autogenu_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(autogenu_root)
@@ -218,6 +217,7 @@ class AutoGenU(object):
                 L: The stage cost.
                 phi: The terminal cost.
         """
+        assert len(fo) == self.__nxo, "Dimension of f must be nxo!"
         f = []
         for i in range(self.__player):
             for j in range(self.__nxo):
@@ -229,56 +229,38 @@ class AutoGenU(object):
         x = sympy.symbols('x[0:%d]' %(self.__nxo))
         u = sympy.symbols('u[0:%d]' %(self.__nu+self.__nc+self.__nh))
         lmd = sympy.symbols('lmd[0:%d]' %(self.__nx))
-        hamiltonian1 = L[0] + sum(lmd[i] * f[i] for i in range(self.__nxo))
-        hamiltonian2 = L[1] + sum(lmd[i+self.__nxo] * f[i] for i in range(self.__nxo))
-        hamiltonian3 = L[2] + sum(lmd[i+self.__nxo*2] * f[i] for i in range(self.__nxo))
+        hamiltonian = [0]*self.__player
+        for i in range(self.__player):
+            hamiltonian[i] = L[i] + sum(lmd[j+self.__nxo*i] * f[j] for j in range(self.__nxo))
         #hamiltonian += sum(u[self.__nu+i] * C[i] for i in range(self.__nc))
         nuc = self.__nu + self.__nc
         #hamiltonian += sum(u[nuc+i] * h[i] for i in range(self.__nh))
-        hx1 = symutils.diff_scalar_func(hamiltonian1, x)
-        hx2 = symutils.diff_scalar_func(hamiltonian2, x)
-        hx3 = symutils.diff_scalar_func(hamiltonian3, x)
-        hx = []
-        for i in range(self.__nxo):
-            hx.append(hx1[i])
-        for i in range(self.__nxo):
-            hx.append(hx2[i])
-        for i in range(self.__nxo):
-            hx.append(hx3[i])
-        hx = tuple(hx)
-        u1 = [] ; u2 = []; u3 = []
-        for i in range(self.__ulist[0]):
-            u1.append(u[i])
-        for i in range(self.__ulist[1]):
-            u2.append(u[i + self.__ulist[0]])
-        for i in range(self.__ulist[2]):
-            u3.append(u[i + self.__ulist[0]+self.__ulist[1]])
-        u1 = tuple(u1); u2 = tuple(u2); u3 = tuple(u3)
-        hu1 = symutils.diff_scalar_func(hamiltonian1, u1)
-        hu2 = symutils.diff_scalar_func(hamiltonian2, u2)
-        hu3 = symutils.diff_scalar_func(hamiltonian3, u3)
-        hu = []
-        for i in range(len(u1)):
-            hu.append(hu1[i])
-        for i in range(len(u2)):
-            hu.append(hu2[i])
-        for i in range(len(u3)):
-            hu.append(hu3[i])
-        hu = tuple(hu)
+        hx = [0]*self.__player
+        for i in range(self.__player):
+            hx[i] = symutils.diff_scalar_func(hamiltonian[i], x)
+        hx = tuple(i for sublist in hx for i in sublist)
+        ui = []
+        unumber = 0
+        for i in range(self.__player):
+            ui.append([])
+        for i in range(self.__player):
+            for j in range(self.__ulist[i]):
+                ui[i].append(u[unumber])
+                unumber += 1
+        uj = [0]*self.__player
+        for i in range(self.__player):
+            uj[i] = tuple(ui[i])
+        hu = [0]*self.__player
+        for i in range(self.__player):
+            hu[i] = symutils.diff_scalar_func(hamiltonian[i], uj[i])
+        hu = tuple(i for sublist in hu for i in sublist)
         fb_eps = sympy.symbols('fb_eps[0:%d]' %(self.__nh))
         # for i in range(self.__nh):
         #     hu[nuc+i] = sympy.sqrt(u[nuc+i]**2 + h[i]**2 + fb_eps[i]) - (u[nuc+i] - h[i])
-        phix1 = symutils.diff_scalar_func(phi[0], x)
-        phix2 = symutils.diff_scalar_func(phi[1], x)
-        phix3 = symutils.diff_scalar_func(phi[2], x)
-        phix = []
-        for i in range(self.__nxo):
-            phix.append(phix1[i])
-        for i in range(self.__nxo):
-            phix.append(phix2[i])
-        for i in range(self.__nxo):
-            phix.append(phix3[i])
-        phix = tuple(phix)
+        phix = [0]*self.__player
+        for i in range(self.__player):
+            phix[i] = symutils.diff_scalar_func(phi[0], x)
+        phix = tuple(i for sublist in phix for i in sublist)
         self.__symbolic_functions = SymbolicFunctions(f, phix, hx, hu)
 
     def add_control_input_bounds(
