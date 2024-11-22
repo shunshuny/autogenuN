@@ -259,7 +259,7 @@ class AutoGenU(object):
         #     hu[nuc+i] = sympy.sqrt(u[nuc+i]**2 + h[i]**2 + fb_eps[i]) - (u[nuc+i] - h[i])
         phix = [0]*self.__player
         for i in range(self.__player):
-            phix[i] = symutils.diff_scalar_func(phi[0], x)
+            phix[i] = symutils.diff_scalar_func(phi[i], x)
         phix = tuple(i for sublist in phix for i in sublist)
         self.__symbolic_functions = SymbolicFunctions(f, phix, hx, hu)
 
